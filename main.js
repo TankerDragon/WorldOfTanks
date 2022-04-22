@@ -2,6 +2,7 @@
 class InputHandler {
   constructor() {
     this.keys = [];
+    this.direction = { x: 0, y: 0, normalized: { x: 0, y: 0 } };
     this.mouse = { x: 0, y: 0 };
     window.addEventListener("keydown", (e) => {
       if ((e.key == "a" || e.key == "d" || e.key == "w" || e.key == "s") && this.keys.indexOf(e.key) == -1) {
@@ -20,30 +21,56 @@ class InputHandler {
       this.mouse.y = e.clientY;
     };
   }
+  update() {
+    var left = this.keys.includes("a");
+    var right = this.keys.includes("d");
+    var up = this.keys.includes("w");
+    var down = this.keys.includes("s");
+
+    this.direction.x = left && right ? 0 : left ? -1 : right ? 1 : 0;
+    this.direction.y = up && down ? 0 : up ? -1 : down ? 1 : 0;
+
+    if (this.direction.x != 0 && this.direction.y != 0) {
+      this.direction.normalized.x = this.direction.x * Math.SQRT1_2;
+      this.direction.normalized.y = this.direction.y * Math.SQRT1_2;
+    } else {
+      this.direction.normalized.x = this.direction.x;
+      this.direction.normalized.y = this.direction.y;
+    }
+    // console.log(this.direction.normalized);
+  }
 }
 ///
 class Player {
   constructor(game) {
     this.x = 100;
     this.y = 100;
-    this.speed = 100;
+    this.speed = 300;
     this.alpha = 0;
+    this.velocity = { x: 0, y: 0 };
     this.game = game;
   }
 
   update(input) {
     var dy = input.mouse.y - this.y;
     var dx = input.mouse.x - this.x;
-    console.log(dx, dy);
+
     if (input.mouse.x < this.x) {
       this.alpha = Math.atan(dy / dx) + Math.PI;
     } else {
       this.alpha = Math.atan(dy / dx);
     }
-    if (input.keys.includes("a")) this.x--;
-    else if (input.keys.includes("d")) this.x++;
-    if (input.keys.includes("w")) this.y--;
-    else if (input.keys.includes("s")) this.y++;
+    this.velocity.x = this.speed * input.direction.normalized.x;
+    this.velocity.y = this.speed * input.direction.normalized.y;
+
+    this.x += this.velocity.x * (1 / FPS);
+    this.y += this.velocity.y * (1 / FPS);
+
+    console.log(this.x, this.y);
+    // if (input.keys.includes("a")) this.x--;
+    // else if (input.keys.includes("d")) this.x++;
+    // if (input.keys.includes("w")) this.y--;
+    // else if (input.keys.includes("s")) this.y++;
   }
   draw(context) {
     context.beginPath();
@@ -62,6 +89,7 @@ class Game {
     this.input = new InputHandler();
   }
   update() {
+    this.input.update();
     this.player.update(this.input);
   }
   draw(context) {
@@ -76,7 +104,7 @@ const ctx = canvas.getContext("2d");
 canvas.height = window.innerHeight;
 canvas.width = window.innerWidth;
 
-ctx.strokeStyle = "#ff0000";
+ctx.strokeStyle = "#0362fc";
 ctx.lineWidth = 5;
 const game = new Game(canvas.width, canvas.height);
 
