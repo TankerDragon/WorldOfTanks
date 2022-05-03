@@ -1,6 +1,7 @@
 //
 class InputHandler {
   constructor() {
+    this.shoot = false;
     this.keys = [];
     this.direction = { x: 0, y: 0, normalized: { x: 0, y: 0 } };
     this.mouse = { x: 0, y: 0 };
@@ -19,6 +20,12 @@ class InputHandler {
     window.onmousemove = (e) => {
       this.mouse.x = e.clientX;
       this.mouse.y = e.clientY;
+    };
+    window.onmousedown = (e) => {
+      this.shoot = true;
+    };
+    window.onmouseup = (e) => {
+      this.shoot = false;
     };
   }
   update() {
@@ -43,9 +50,9 @@ class InputHandler {
 ///
 class Player {
   constructor(game) {
-    this.x = 100;
-    this.y = 100;
-    this.speed = 300;
+    this.x = 500;
+    this.y = 300;
+    this.speed = 200;
     this.alpha = 0;
     this.velocity = { x: 0, y: 0 };
     this.game = game;
@@ -66,7 +73,7 @@ class Player {
     this.x += this.velocity.x * (1 / FPS);
     this.y += this.velocity.y * (1 / FPS);
 
-    console.log(this.x, this.y);
+    //console.log(this.x, this.y);
     // if (input.keys.includes("a")) this.x--;
     // else if (input.keys.includes("d")) this.x++;
     // if (input.keys.includes("w")) this.y--;
@@ -81,19 +88,54 @@ class Player {
   }
 }
 ///
+class Bullet {
+  constructor(x, y, mx, my) {
+    // this.target = { x: input.mouse.x, y: input.mouse.y };
+    this.is_active = true;
+    this.x = x;
+    this.y = y;
+    this.speed = 1500;
+    let dx = mx - x,
+      dy = my - y;
+    let distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+    this.velocity = { x: this.speed * (dx / distance), y: this.speed * (dy / distance) };
+  }
+  update() {
+    this.x += this.velocity.x * (1 / FPS);
+    this.y += this.velocity.y * (1 / FPS);
+  }
+  draw(context) {
+    context.beginPath();
+    context.arc(this.x, this.y, 10, 0, 2 * Math.PI);
+    context.stroke();
+  }
+}
+///
 class Game {
   constructor(width, height) {
     this.width = width;
     this.height = height;
     this.player = new Player(this);
     this.input = new InputHandler();
+    this.bullets = [];
   }
   update() {
     this.input.update();
     this.player.update(this.input);
+
+    if (this.input.shoot) {
+      this.bullets.push(new Bullet(this.player.x, this.player.y, this.input.mouse.x, this.input.mouse.y));
+    }
+    for (let i = 0; i < this.bullets.length; i++) {
+      this.bullets[i].update();
+    }
+    //console.log(this.bullets);
   }
   draw(context) {
     this.player.draw(context);
+    for (let i = 0; i < this.bullets.length; i++) {
+      this.bullets[i].draw(context);
+    }
   }
 }
 
@@ -114,6 +156,7 @@ function animate() {
   game.draw(ctx);
 }
 setInterval(animate, Math.round(1000 / FPS));
+
 // function loop() {
 //     // Drawing Background
 //     ctx.fillStyle = 'red';
