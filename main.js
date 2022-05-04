@@ -52,7 +52,7 @@ class Player {
   constructor(game) {
     this.x = 500;
     this.y = 300;
-    this.speed = 200;
+    this.speed = 500;
     this.alpha = 0;
     this.velocity = { x: 0, y: 0 };
     this.game = game;
@@ -80,6 +80,9 @@ class Player {
     // else if (input.keys.includes("s")) this.y++;
   }
   draw(context) {
+    ctx.strokeStyle = "#0362fc";
+    ctx.lineWidth = 5;
+
     context.beginPath();
     context.arc(this.x, this.y, 50, 0, 2 * Math.PI);
     context.moveTo(this.x, this.y);
@@ -105,8 +108,11 @@ class Bullet {
     this.y += this.velocity.y * (1 / FPS);
   }
   draw(context) {
+    ctx.strokeStyle = "yellow";
+    ctx.lineWidth = 3;
+
     context.beginPath();
-    context.arc(this.x, this.y, 10, 0, 2 * Math.PI);
+    context.arc(this.x, this.y, 5, 0, 2 * Math.PI);
     context.stroke();
   }
 }
@@ -146,8 +152,6 @@ const ctx = canvas.getContext("2d");
 canvas.height = window.innerHeight;
 canvas.width = window.innerWidth;
 
-ctx.strokeStyle = "#0362fc";
-ctx.lineWidth = 5;
 const game = new Game(canvas.width, canvas.height);
 
 function animate() {
