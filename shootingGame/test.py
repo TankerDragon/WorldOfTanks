@@ -1,39 +1,48 @@
 import threading
 
+
 class Control:
-    looping = True
+    started = False
+
 
 control = Control()
 
+
+def start_looping():
+    if not control.started:
+        control.started = True
+        set_interval(fff, 1)
+
+
 def stop_looping():
-    control.looping = False
+    control.started = False
 
 
 class Player:
     num = 0
 
+
 def set_interval(func, sec):
     def func_wrapper():
         set_interval(func, sec)
         func()
-    
-    if control.looping:
+
+    if control.started:
         t = threading.Timer(sec, func_wrapper)
         t.start()
         return t
 
+
 player = Player()
+
 
 def fff():
     player.num += 1
-    
+
 
 def get_num():
     return player.num
 
-
-
-set_interval(fff, 3)
 
 #
 #
@@ -74,7 +83,6 @@ set_interval(fff, 3)
 #             self.callback()
 
 
-
 # event = threading.Event()
 
 
@@ -83,8 +91,6 @@ set_interval(fff, 3)
 
 # player = Player()
 
-  
-    
 
 # def get_num():
 #     return player.num
