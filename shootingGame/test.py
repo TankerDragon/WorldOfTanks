@@ -16,6 +16,7 @@ def set_interval(func, sec):
     def func_wrapper():
         set_interval(func, sec)
         func()
+    
     if control.looping:
         t = threading.Timer(sec, func_wrapper)
         t.start()
