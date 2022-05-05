@@ -50,12 +50,18 @@ class InputHandler {
 ///
 class Player {
   constructor(game) {
-    this.x = 500;
-    this.y = 300;
+    this.x = Math.round(Math.random() * window.innerWidth);
+    this.y = Math.round(Math.random() * window.innerHeight);
     this.speed = 500;
     this.alpha = 0;
     this.velocity = { x: 0, y: 0 };
     this.game = game;
+    this.reloadTime = 400;
+    this.isReloaded = false;
+    //
+    setInterval(() => {
+      this.isReloaded = true;
+    }, this.reloadTime);
   }
 
   update(input) {
@@ -70,8 +76,9 @@ class Player {
     this.velocity.x = this.speed * input.direction.normalized.x;
     this.velocity.y = this.speed * input.direction.normalized.y;
 
-    this.x += this.velocity.x * (1 / FPS);
-    this.y += this.velocity.y * (1 / FPS);
+    this.x += Math.round(this.velocity.x * (1 / FPS));
+    this.y += Math.round(this.velocity.y * (1 / FPS));
+    console.log(this.x, this.y);
 
     //console.log(this.x, this.y);
     // if (input.keys.includes("a")) this.x--;
@@ -129,7 +136,8 @@ class Game {
     this.input.update();
     this.player.update(this.input);
 
-    if (this.input.shoot) {
+    if (this.input.shoot && this.player.isReloaded) {
+      this.player.isReloaded = false;
       this.bullets.push(new Bullet(this.player.x, this.player.y, this.input.mouse.x, this.input.mouse.y));
     }
     for (let i = 0; i < this.bullets.length; i++) {
