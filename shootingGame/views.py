@@ -5,9 +5,12 @@ from rest_framework.response import Response
 from requests import request
 
 #####
-from .test import get_num, stop_looping
+from .test import get_num, start_looping, stop_looping
+
+
 def main(request):
     return render(request, 'index.html')
+
 
 @api_view(['GET', 'POST'])
 def update(request):
