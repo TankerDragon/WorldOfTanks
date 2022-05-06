@@ -1,7 +1,8 @@
 from django.urls import path
 from . import views
 urlpatterns = [
-    path('', views.main),
+    path('', views.main, name='index'),
     path('update/', views.update),
-    path('game/', views.gameControl),
+    path('game/', views.game),
+    path('username/', views.username, name='username')
 ]

@@ -4,6 +4,7 @@ class InputHandler {
     this.shoot = false;
     this.keys = [];
     this.direction = { x: 0, y: 0, normalized: { x: 0, y: 0 } };
+    this.direction2 = { x: 0, y: 0 };
     this.mouse = { x: 0, y: 0 };
     window.addEventListener("keydown", (e) => {
       if ((e.key == "a" || e.key == "d" || e.key == "w" || e.key == "s") && this.keys.indexOf(e.key) == -1) {
@@ -37,6 +38,9 @@ class InputHandler {
     this.direction.x = left && right ? 0 : left ? -1 : right ? 1 : 0;
     this.direction.y = up && down ? 0 : up ? -1 : down ? 1 : 0;
 
+    // this.direction2.x = left && right ? 0 : left ? -1 : right ? 1 : 0;
+    // this.direction2.y = up && down ? 0 : up ? -1 : down ? 1 : 0;
+
     if (this.direction.x != 0 && this.direction.y != 0) {
       this.direction.normalized.x = this.direction.x * Math.SQRT1_2;
       this.direction.normalized.y = this.direction.y * Math.SQRT1_2;
@@ -52,11 +56,11 @@ class Player {
   constructor(game) {
     this.x = Math.round(Math.random() * window.innerWidth);
     this.y = Math.round(Math.random() * window.innerHeight);
-    this.speed = 500;
+    this.speed = 100;
     this.alpha = 0;
     this.velocity = { x: 0, y: 0 };
     this.game = game;
-    this.reloadTime =400;
+    this.reloadTime = 400;
     this.isReloaded = false;
     //
     setInterval(() => {
@@ -78,7 +82,9 @@ class Player {
 
     this.x += Math.round(this.velocity.x * (1 / FPS));
     this.y += Math.round(this.velocity.y * (1 / FPS));
-    console.log(this.x, this.y);
+    //
+    //
+    // console.log(this.x, this.y);
 
     //console.log(this.x, this.y);
     // if (input.keys.includes("a")) this.x--;
@@ -145,6 +151,12 @@ class Game {
     }
     //console.log(this.bullets);
   }
+  updateData(data) {
+    this.player.x = data.coodX;
+    this.player.y = data.coodY;
+    this.input.direction.x = data.h;
+    this.input.direction.y = data.v;
+  }
   draw(context) {
     this.player.draw(context);
     for (let i = 0; i < this.bullets.length; i++) {
@@ -153,7 +165,8 @@ class Game {
   }
 }
 
-const FPS = 60;
+const FPS = 30; // Frames per second
+const RPS = 1; // in milliseconds
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -169,6 +182,58 @@ function animate() {
 }
 setInterval(animate, Math.round(1000 / FPS));
 
+//
+const serverInterval = setInterval(server, Math.round(1000 / RPS));
+
+function getCSRF() {
+  arr = document.getElementById("csrf").innerHTML.split("value");
+  arr = arr[1].split('"');
+  return arr[1];
+}
+
+function server() {
+  fetch("/update/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCSRF(),
+    },
+    body: JSON.stringify({
+      h: game.input.direction.x,
+      v: game.input.direction.y,
+    }),
+  })
+    .catch((data) => {
+      stopServerInterval();
+      console.log("!!!ERROR!!!: ", data);
+      // window.alert("ERROR occured!");
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("json data: ", data);
+      game.updateData(data);
+    });
+}
+function stopServerInterval() {
+  clearInterval(serverInterval);
+}
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 // function loop() {
 //     // Drawing Background
 //     ctx.fillStyle = 'red';

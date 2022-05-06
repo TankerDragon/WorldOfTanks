@@ -9,6 +9,7 @@
     <title>World of Tanks</title>
   </head>
   <body>
+    <div id="csrf" style="display: none">{% csrf_token %}</div>
     <canvas id="myCanvas"></canvas>
     <script src="{% static 'scripts/main.js' %}"></script>
   </body>

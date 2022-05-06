@@ -11,14 +11,31 @@ import threading
 
 class Control:
     started = False
-    FPS = 30
+    UPS = 30   # update per socond
+
+    def get_game_status(self):
+        if self.started:
+            return "started"
+        else:
+            return "stoped"
+    # functions to control main game <<<<<<
+    def start_looping(self):
+        if not self.started:
+            self.started = True
+            set_interval(loop, 1/self.UPS)
+
+
+    def stop_looping(self):
+        self.started = False
+
+    #>>>>>>>>>>>>>>>>>>>
 
 
 class Player:
     x = 500
     y = 500
     speed = 100
-    horizontal = 1
+    horizontal = 0
     vertical = 0
     vX = 0
     vY = 0
@@ -27,23 +44,27 @@ class Player:
 
     reloadTime = 0
     isReloaded = False
-    num = 0
 
     def update(self):
-        self.num += 1
+        self.vX = self.speed * self.horizontal
+        self.vY = self.speed * self.vertical
         #
-        self.vX = round(self.speed * self.horizontal)
-        self.vY = round(self.speed * self.vertical)
-        #
-        self.x += round(self.vX * (1/control.FPS))
-        self.y += round(self.vY * (1/control.FPS))
+        self.x += round(self.vX * (1/gameControl.UPS))
+        self.y += round(self.vY * (1/gameControl.UPS))
 
     def get_details(self):
         detail = {
             "coodX": self.x,
-            "coodY": self.y
+            "coodY": self.y,
+            "h": self.horizontal,
+            "v": self.vertical
         }
         return detail
+    
+    def remote_update(self, data):
+        self.horizontal = data["h"]
+        self.vertical = data["v"]
+        
 
 
 class Bullet:
@@ -63,40 +84,30 @@ class Game:
 
 ################################
 # interval function
-
-
 def set_interval(func, sec):
 
     def func_wrapper():
         set_interval(func, sec)
         func()
 
-    if control.started:
+    if gameControl.started:
         t = threading.Timer(sec, func_wrapper)
         t.start()
         return t
 
 
-def start_looping():
-    if not control.started:
-        control.started = True
-        set_interval(loop, 1/control.FPS)
-
-
-def stop_looping():
-    control.started = False
-
-
-def get_num():
-    return game.player.num
 
 
 def get_player_details():
     return game.player.get_details()
 
+def update_player(data):
+    game.player.remote_update(data)
+    return game.player.get_details()
+
 
 game = Game()
-control = Control()
+gameControl = Control()
 
 
 def loop():
@@ -126,7 +137,7 @@ def loop():
 #
 #
 #
-#
+# Garbages (may be useful later :)
 
 # defining ionterval function
 # s = sched.scheduler(time.time, time.sleep)
