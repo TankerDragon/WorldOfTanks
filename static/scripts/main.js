@@ -56,7 +56,7 @@ class Player {
     this.alpha = 0;
     this.velocity = { x: 0, y: 0 };
     this.game = game;
-    this.reloadTime = 10;
+    this.reloadTime =400;
     this.isReloaded = false;
     //
     setInterval(() => {

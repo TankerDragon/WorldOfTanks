@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from requests import request
 
 #####
-from .test import get_num, start_looping, stop_looping
+from .game import get_num, start_looping, stop_looping, get_player_details
 
 
 def main(request):
@@ -14,9 +14,14 @@ def main(request):
 
 @api_view(['GET', 'POST'])
 def update(request):
+    return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET', 'POST'])
+def gameControl(request):
     if request.method == 'GET':
         # print(get_num())
-        return Response({"num": get_num()})
+        return Response(get_player_details())
     elif request.method == 'POST':
         print(request.data)
         if request.data['game'] == 'start':
