@@ -56,7 +56,7 @@ class Player {
   constructor(game) {
     this.x = Math.round(Math.random() * window.innerWidth);
     this.y = Math.round(Math.random() * window.innerHeight);
-    this.speed = 100;
+    this.speed = 500;
     this.alpha = 0;
     this.velocity = { x: 0, y: 0 };
     this.game = game;

@@ -34,7 +34,7 @@ class Control:
 class Player:
     x = 500
     y = 500
-    speed = 100
+    speed = 500
     horizontal = 0
     vertical = 0
     vX = 0
@@ -42,7 +42,7 @@ class Player:
     #
     alpha = 0
 
-    reloadTime = 0
+    reloadTime = 400
     isReloaded = False
 
     def update(self):
