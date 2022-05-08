@@ -3,8 +3,8 @@ class InputHandler {
   constructor() {
     this.shoot = false;
     this.keys = [];
+    this.tempDirection = { x: 0, y: 0 };
     this.direction = { x: 0, y: 0, normalized: { x: 0, y: 0 } };
-    this.direction2 = { x: 0, y: 0 };
     this.mouse = { x: 0, y: 0 };
     window.addEventListener("keydown", (e) => {
       if ((e.key == "a" || e.key == "d" || e.key == "w" || e.key == "s") && this.keys.indexOf(e.key) == -1) {
@@ -35,8 +35,8 @@ class InputHandler {
     var up = this.keys.includes("w");
     var down = this.keys.includes("s");
 
-    this.direction.x = left && right ? 0 : left ? -1 : right ? 1 : 0;
-    this.direction.y = up && down ? 0 : up ? -1 : down ? 1 : 0;
+    this.tempDirection.x = left && right ? 0 : left ? -1 : right ? 1 : 0;
+    this.tempDirection.y = up && down ? 0 : up ? -1 : down ? 1 : 0;
 
     // this.direction2.x = left && right ? 0 : left ? -1 : right ? 1 : 0;
     // this.direction2.y = up && down ? 0 : up ? -1 : down ? 1 : 0;
@@ -154,6 +154,7 @@ class Game {
   updateData(data) {
     this.player.x = data.coodX;
     this.player.y = data.coodY;
+
     this.input.direction.x = data.h;
     this.input.direction.y = data.v;
   }
@@ -165,8 +166,8 @@ class Game {
   }
 }
 
-const FPS = 30; // Frames per second
-const RPS = 1; // in milliseconds
+const FPS = 60; // Frames per second
+const RPS = 10; // in milliseconds
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -183,7 +184,7 @@ function animate() {
 setInterval(animate, Math.round(1000 / FPS));
 
 //
-const serverInterval = setInterval(server, Math.round(1000 / RPS));
+serverInterval = setInterval(server, Math.round(1000 / RPS));
 
 function getCSRF() {
   arr = document.getElementById("csrf").innerHTML.split("value");
@@ -199,8 +200,8 @@ function server() {
       "X-CSRFToken": getCSRF(),
     },
     body: JSON.stringify({
-      h: game.input.direction.x,
-      v: game.input.direction.y,
+      h: game.input.tempDirection.x,
+      v: game.input.tempDirection.y,
     }),
   })
     .catch((data) => {
