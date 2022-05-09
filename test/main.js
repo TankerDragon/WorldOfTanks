@@ -3,7 +3,6 @@ class InputHandler {
   constructor() {
     this.shoot = false;
     this.keys = [];
-    this.tempDirection = { x: 0, y: 0 };
     this.direction = { x: 0, y: 0, normalized: { x: 0, y: 0 } };
     this.mouse = { x: 0, y: 0 };
     window.addEventListener("keydown", (e) => {
@@ -35,11 +34,8 @@ class InputHandler {
     var up = this.keys.includes("w");
     var down = this.keys.includes("s");
 
-    this.tempDirection.x = left && right ? 0 : left ? -1 : right ? 1 : 0;
-    this.tempDirection.y = up && down ? 0 : up ? -1 : down ? 1 : 0;
-
-    // this.direction2.x = left && right ? 0 : left ? -1 : right ? 1 : 0;
-    // this.direction2.y = up && down ? 0 : up ? -1 : down ? 1 : 0;
+    this.direction.x = left && right ? 0 : left ? -1 : right ? 1 : 0;
+    this.direction.y = up && down ? 0 : up ? -1 : down ? 1 : 0;
 
     if (this.direction.x != 0 && this.direction.y != 0) {
       this.direction.normalized.x = this.direction.x * Math.SQRT1_2;
@@ -56,8 +52,11 @@ class Player {
   constructor(game) {
     this.x = Math.round(Math.random() * window.innerWidth);
     this.y = Math.round(Math.random() * window.innerHeight);
+    this.width = 50;
+    this.height = 100;
     this.speed = 500;
     this.alpha = 0;
+    this.alphaTower = 0;
     this.velocity = { x: 0, y: 0 };
     this.game = game;
     this.reloadTime = 400;
@@ -84,22 +83,18 @@ class Player {
     this.y += Math.round(this.velocity.y * (1 / FPS));
     //
     //
-    // console.log(this.x, this.y);
-
-    //console.log(this.x, this.y);
-    // if (input.keys.includes("a")) this.x--;
-    // else if (input.keys.includes("d")) this.x++;
-    // if (input.keys.includes("w")) this.y--;
-    // else if (input.keys.includes("s")) this.y++;
   }
   draw(context) {
-    ctx.strokeStyle = "#0362fc";
-    ctx.lineWidth = 5;
+    context.strokeStyle = "#0362fc";
+    context.lineWidth = 5;
 
+    var a = Math.sqrt(Math.pow(this.width / 2, 2) + Math.pow(this.height / 2, 2));
+    var alp = Math.asin(this.width / 2 / a);
     context.beginPath();
-    context.arc(this.x, this.y, 50, 0, 2 * Math.PI);
+    // context.arc(this.x, this.y, 50, 0, 2 * Math.PI);
     context.moveTo(this.x, this.y);
-    context.lineTo(Math.cos(this.alpha) * 50 + this.x, Math.sin(this.alpha) * 50 + this.y);
+    context.lineTo(Math.cos(this.alpha + alp) * a + this.x, Math.sin(this.alpha + alp) * a + this.y); // front right point
+    context.lineTo(Math.cos(this.alpha + Math.PI - alp) * a + this.x, Math.sin(this.alpha + alp) * a + this.y); // back  right point
     context.stroke();
   }
 }
