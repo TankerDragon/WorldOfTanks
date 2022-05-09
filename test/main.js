@@ -52,14 +52,16 @@ class Player {
   constructor(game) {
     this.x = Math.round(Math.random() * window.innerWidth);
     this.y = Math.round(Math.random() * window.innerHeight);
-    this.width = 50;
-    this.height = 100;
-    this.speed = 500;
+    this.width = 100;
+    this.height = 200;
+    this.speed = 0;
+    this.maxSpeed = 300;
     this.alpha = 0;
+    this.angularSpeed = 1;
+    this.acceleration = 500;
     this.alphaTower = 0;
     this.velocity = { x: 0, y: 0 };
-    this.game = game;
-    this.reloadTime = 400;
+    this.reloadTime = 3000;
     this.isReloaded = false;
     //
     setInterval(() => {
@@ -68,19 +70,30 @@ class Player {
   }
 
   update(input) {
-    var dy = input.mouse.y - this.y;
-    var dx = input.mouse.x - this.x;
+    // var dy = input.mouse.y - this.y;
+    // var dx = input.mouse.x - this.x;
 
-    if (input.mouse.x < this.x) {
-      this.alpha = Math.atan(dy / dx) + Math.PI;
+    // if (input.mouse.x < this.x) {
+    //   this.alpha = Math.atan(dy / dx) + Math.PI;
+    // } else {
+    //   this.alpha = Math.atan(dy / dx);
+    // }
+    if (input.direction.y == -1) {
+      this.speed += this.acceleration * (1 / FPS);
     } else {
-      this.alpha = Math.atan(dy / dx);
+      this.speed -= this.acceleration * (1 / FPS);
     }
-    this.velocity.x = this.speed * input.direction.normalized.x;
-    this.velocity.y = this.speed * input.direction.normalized.y;
+    if (this.speed < 0) this.speed = 0;
+    if (this.speed > this.maxSpeed) this.speed = this.maxSpeed;
+
+    this.velocity.x = this.speed * Math.cos(this.alpha);
+    this.velocity.y = this.speed * Math.sin(this.alpha);
+    // this.velocity.y = this.speed * input.direction.normalized.y;
 
     this.x += Math.round(this.velocity.x * (1 / FPS));
     this.y += Math.round(this.velocity.y * (1 / FPS));
+
+    this.alpha += this.angularSpeed * input.direction.x * (1 / FPS);
     //
     //
   }
@@ -91,10 +104,18 @@ class Player {
     var a = Math.sqrt(Math.pow(this.width / 2, 2) + Math.pow(this.height / 2, 2));
     var alp = Math.asin(this.width / 2 / a);
     context.beginPath();
-    // context.arc(this.x, this.y, 50, 0, 2 * Math.PI);
-    context.moveTo(this.x, this.y);
-    context.lineTo(Math.cos(this.alpha + alp) * a + this.x, Math.sin(this.alpha + alp) * a + this.y); // front right point
-    context.lineTo(Math.cos(this.alpha + Math.PI - alp) * a + this.x, Math.sin(this.alpha + alp) * a + this.y); // back  right point
+    // drawing body of the tank
+    context.moveTo(Math.cos(this.alpha + alp) * a + this.x, Math.sin(this.alpha + alp) * a + this.y); // front right point
+    context.lineTo(Math.cos(this.alpha + Math.PI - alp) * a + this.x, Math.sin(this.alpha + Math.PI - alp) * a + this.y); // back  right point
+    context.lineTo(Math.cos(this.alpha + Math.PI + alp) * a + this.x, Math.sin(this.alpha + Math.PI + alp) * a + this.y); // back  left point
+    context.lineTo(Math.cos(this.alpha - alp) * a + this.x, Math.sin(this.alpha - alp) * a + this.y); // front left point
+    context.lineTo(Math.cos(this.alpha + alp) * a + this.x, Math.sin(this.alpha + alp) * a + this.y); // back to front right point
+    context.stroke();
+
+    // drawing tower of the tank
+    context.beginPath();
+    context.arc(this.x, this.y, 40, 0, 2 * Math.PI);
+
     context.stroke();
   }
 }
@@ -109,7 +130,10 @@ class Bullet {
     let dx = mx - x,
       dy = my - y;
     let distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-    this.velocity = { x: this.speed * (dx / distance), y: this.speed * (dy / distance) };
+    this.velocity = {
+      x: this.speed * (dx / distance),
+      y: this.speed * (dy / distance),
+    };
   }
   update() {
     this.x += this.velocity.x * (1 / FPS);
