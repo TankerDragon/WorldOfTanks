@@ -184,41 +184,41 @@ function animate() {
 setInterval(animate, Math.round(1000 / FPS));
 
 //
-// serverInterval = setInterval(server, Math.round(1000 / RPS));
+serverInterval = setInterval(server, Math.round(1000 / RPS));
 
-// function getCSRF() {
-//   arr = document.getElementById("csrf").innerHTML.split("value");
-//   arr = arr[1].split('"');
-//   return arr[1];
-// }
+function getCSRF() {
+  arr = document.getElementById("csrf").innerHTML.split("value");
+  arr = arr[1].split('"');
+  return arr[1];
+}
 
-// function server() {
-//   fetch("/update/", {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//       "X-CSRFToken": getCSRF(),
-//     },
-//     body: JSON.stringify({
-//       h: game.input.tempDirection.x,
-//       v: game.input.tempDirection.y,
-//     }),
-//   })
-//     .catch((data) => {
-//       stopServerInterval();
-//       console.log("!!!ERROR!!!: ", data);
-//       // window.alert("ERROR occured!");
-//     })
-//     .then((res) => res.json())
-//     .then((data) => {
-//       console.log("json data: ", data);
-//       game.updateData(data);
-//     });
-// }
-// function stopServerInterval() {
-//   clearInterval(serverInterval);
-// }
-//
+function server() {
+  fetch("/update/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCSRF(),
+    },
+    body: JSON.stringify({
+      h: game.input.tempDirection.x,
+      v: game.input.tempDirection.y,
+    }),
+  })
+    .catch((data) => {
+      stopServerInterval();
+      console.log("!!!ERROR!!!: ", data);
+      // window.alert("ERROR occured!");
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("json data: ", data);
+      game.updateData(data);
+    });
+}
+function stopServerInterval() {
+  clearInterval(serverInterval);
+}
+
 //
 //
 //

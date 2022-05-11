@@ -17,18 +17,18 @@ class Control:
         if self.started:
             return "started"
         else:
-            return "stoped"
+            return "stopped"
     # functions to control main game <<<<<<
+
     def start_looping(self):
         if not self.started:
             self.started = True
             set_interval(loop, 1/self.UPS)
 
-
     def stop_looping(self):
         self.started = False
 
-    #>>>>>>>>>>>>>>>>>>>
+    # >>>>>>>>>>>>>>>>>>>
 
 
 class Player:
@@ -60,11 +60,10 @@ class Player:
             "v": self.vertical
         }
         return detail
-    
+
     def remote_update(self, data):
         self.horizontal = data["h"]
         self.vertical = data["v"]
-        
 
 
 class Bullet:
@@ -84,6 +83,8 @@ class Game:
 
 ################################
 # interval function
+
+
 def set_interval(func, sec):
 
     def func_wrapper():
@@ -96,10 +97,9 @@ def set_interval(func, sec):
         return t
 
 
-
-
 def get_player_details():
     return game.player.get_details()
+
 
 def update_player(data):
     game.player.remote_update(data)

@@ -78,12 +78,12 @@ WSGI_APPLICATION = 'wot.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        'NAME': 'wot',
-        'USER': 'root',
-        'HOST': 'localhost',
-        'PASSWORD': '@akb21s4m$'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        # 'NAME': 'wot',
+        # 'USER': 'root',
+        # 'HOST': 'localhost',
+        # 'PASSWORD': '@akb21s4m$'
         # 'PASSWORD': 'akbarjonaA8090'
     }
 }

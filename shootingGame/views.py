@@ -1,3 +1,4 @@
+from multiprocessing import context
 from django.shortcuts import redirect, render
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -8,8 +9,10 @@ from requests import request
 from .game import get_player_details, update_player, gameControl
 # start_looping, stop_looping, , get_game_status,
 
+
 def main(request):
     return render(request, 'index.html')
+
 
 def username(request):
     if request.method == 'POST':
@@ -18,23 +21,28 @@ def username(request):
     return render(request, 'username.html')
 
 
-
-
 @api_view(['GET', 'POST'])
 def update(request):
     if request.method == "GET":
         return Response(get_player_details())
     elif request.method == "POST":
-        # print(request.data)
+        print(request.data)
         return Response(update_player(request.data))
     return Response(status=status.HTTP_200_OK)
+
+
+def gameSettings(request):
+    context = {
+        "status": gameControl.get_game_status()
+    }
+    return render(request, 'game-settings.html', context)
 
 
 @api_view(['GET', 'POST'])
 def game(request):
     if request.method == 'GET':
         # print(get_num())
-        return Response(gameControl.get_game_status())
+        return Response({"status": gameControl.get_game_status()})
     elif request.method == 'POST':
         print(request.data)
         if request.data['game'] == 'start':
