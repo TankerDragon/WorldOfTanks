@@ -80,7 +80,14 @@ class Game:
 
     def update(self):
         self.player.update()
-
+        if self.player.x < 0:
+            self.player.x = 0
+        elif self.player.x > self.mapWidth:
+            self.player.x = self.mapWidth
+        if self.player.y < 0:
+            self.player.y = 0
+        elif self.player.y > self.mapHeight:
+            self.player.y = self.mapHeight
 ################################
 # interval function
 
