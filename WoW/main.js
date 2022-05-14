@@ -66,41 +66,41 @@ class TileMap {
   } // length of one side of hexagon
   zoomChange(a) {
     this.hexA += a;
-    if (this.hexA < 10) {
-      this.hexA = 10;
+    if (this.hexA < 20) {
+      this.hexA = 20;
     } else {
       this.is_zoomed = true;
     }
   }
-  draw(context, WinWidth, WinHeight) {
+  draw(context, m, n) {
     if(this.is_zoomed) {
       context.strokeStyle = "#fff5d4";
       context.lineWidth = this.hexA/20;
-      var is_even = true;
-      for(let h = 0; h <= WinHeight; h+= this.hexA * (Math.sqrt(3)/2)) {
-        for(let w = 0; w <= WinWidth; w += 3*this.hexA) {
+      for(let j = 0; j < n; j++) { //h+= this.hexA * (Math.sqrt(3)/2)
+        for(let i = 0; i < m; i++) {  //w += 3*this.hexA
+          var is_odd = true;
+
           context.beginPath();
-          if(is_even) {
+          if(is_odd) {
             // context.arc(w, h, 5, 0, 2 * Math.PI);
             // drawImage(image, sx, sy, sw, sh, tx, ty, tw, th)
 
-            context.drawImage(this.image.file, 0, 0, this.image.w, this.image.h, w-this.hexA, h - this.hexA * (Math.sqrt(3)/2), 2*this.hexA, 2*this.hexA * (Math.sqrt(3)/2));
-            context.ellipse(w, h, 10, 5, 0, 0, 2 * Math.PI);
+            context.drawImage(this.image.file, 0, 0, this.image.w, this.image.h, i*3*this.hexA, j*2*this.hexA * (Math.sqrt(3)/2), 2*this.hexA, 2*this.hexA * (Math.sqrt(3)/2));
+            // context.ellipse(w, h, 10, 5, 0, 0, 2 * Math.PI);
 
 
 
           } else {
             // context.arc(w + this.hexA/2, h, 5, 0, 2 * Math.PI);
-            context.drawImage(this.image.file, 0, 0, this.image.w, this.image.h, w-this.hexA + (3*this.hexA)/2, h - this.hexA * (Math.sqrt(3)/2), 2*this.hexA, 2*this.hexA * (Math.sqrt(3)/2));
-            context.ellipse(w + 3*this.hexA/2, h, 10, 5, 0, 0, 2 * Math.PI);
-            // context.drawImage(this.image, 0, 0, 128, 128, w, h, 2*this.hexA, 2*this.hexA);
-
+            context.drawImage(this.image.file, 0, 0, this.image.w, this.image.h, i*3*this.hexA + (3*this.hexA)/2, j*this.hexA * (Math.sqrt(3)/2), 2*this.hexA, 2*this.hexA * (Math.sqrt(3)/2));
+            context.ellipse(1000, 500, 10, 5, 0, 0, 2 * Math.PI);
 
           }
-          console.log(h);
           context.stroke();
+          is_odd = is_odd ? false : true;
+          console.log("1*")
+
         }
-        is_even = is_even ? false : true;
       }
     }
     this.is_zoomed = false;
@@ -243,7 +243,7 @@ class Game {
     }
   }
   draw(context) {
-    this.tileMap.draw(context, window.innerWidth, window.innerHeight);
+    this.tileMap.draw(context, 5, 5);
     
     this.tank.draw(context,1,1);
   }
