@@ -31,7 +31,7 @@ class InputHandler {
     window.onwheel = (e) => {
       this.wheel = -e.deltaY;
       // console.log(e.deltaY);
-    } 
+    };
   }
   update() {
     var left = this.keys.includes("a");
@@ -54,15 +54,16 @@ class InputHandler {
 }
 ///
 class TileMap {
-  constructor (hA) {
+  constructor(hA) {
     this.hexA = hA;
     this.is_zoomed = true;
     this.image = {
       file: document.getElementById("tileMap"),
+      x: 0,
+      y: 0,
       w: 128,
-      h: 128
-  };
-     
+      h: 125,
+    };
   } // length of one side of hexagon
   zoomChange(a) {
     this.hexA += a;
@@ -73,34 +74,49 @@ class TileMap {
     }
   }
   draw(context, m, n) {
-    if(this.is_zoomed) {
+    if (this.is_zoomed) {
       context.strokeStyle = "#fff5d4";
-      context.lineWidth = this.hexA/20;
-      for(let j = 0; j < n; j++) { //h+= this.hexA * (Math.sqrt(3)/2)
-        for(let i = 0; i < m; i++) {  //w += 3*this.hexA
-          var is_odd = true;
+      context.lineWidth = this.hexA / 20;
+      for (let j = 0; j < n; j++) {
+        //h+= this.hexA * (Math.sqrt(3)/2)
+        for (let i = 0; i < m; i++) {
+          //w += 3*this.hexA
 
           context.beginPath();
-          if(is_odd) {
-            // context.arc(w, h, 5, 0, 2 * Math.PI);
-            // drawImage(image, sx, sy, sw, sh, tx, ty, tw, th)
+          // context.arc(w, h, 5, 0, 2 * Math.PI);
+          // drawImage(image, sx, sy, sw, sh, tx, ty, tw, th)
 
-            context.drawImage(this.image.file, 0, 0, this.image.w, this.image.h, i*3*this.hexA, j*2*this.hexA * (Math.sqrt(3)/2), 2*this.hexA, 2*this.hexA * (Math.sqrt(3)/2));
-            // context.ellipse(w, h, 10, 5, 0, 0, 2 * Math.PI);
+          context.drawImage(
+            this.image.file,
+            this.image.x,
+            this.image.y,
+            this.image.w,
+            this.image.h,
+            i * 3 * this.hexA,
+            j * 2 * this.hexA * (Math.sqrt(3) / 2),
+            2 * this.hexA,
+            2 * this.hexA * (Math.sqrt(3) / 2)
+          );
+          // context.ellipse(w, h, 10, 5, 0, 0, 2 * Math.PI);
 
+          // context.arc(w + this.hexA/2, h, 5, 0, 2 * Math.PI);
 
-
-          } else {
-            // context.arc(w + this.hexA/2, h, 5, 0, 2 * Math.PI);
-            context.drawImage(this.image.file, 0, 0, this.image.w, this.image.h, i*3*this.hexA + (3*this.hexA)/2, j*this.hexA * (Math.sqrt(3)/2), 2*this.hexA, 2*this.hexA * (Math.sqrt(3)/2));
-            context.ellipse(1000, 500, 10, 5, 0, 0, 2 * Math.PI);
-
-          }
-          context.stroke();
-          is_odd = is_odd ? false : true;
-          console.log("1*")
-
+          // context.ellipse(1000, 500, 10, 5, 0, 0, 2 * Math.PI);
         }
+        for (let i = 0; i < m; i++) {
+          context.drawImage(
+            this.image.file,
+            0,
+            0,
+            this.image.w,
+            this.image.h,
+            i * 3 * this.hexA + (3 * this.hexA) / 2,
+            j * this.hexA * 2 * (Math.sqrt(3) / 2) + (Math.sqrt(3) / 2) * this.hexA,
+            2 * this.hexA,
+            2 * this.hexA * (Math.sqrt(3) / 2)
+          );
+        }
+        context.stroke();
       }
     }
     this.is_zoomed = false;
@@ -112,140 +128,37 @@ class Tank {
     this.x = x;
     this.y = y;
   }
-  update() {
-
-  }
+  update() {}
   draw(context) {
     context.beginPath();
     context.lineWidth = 3;
     context.strokeStyle = "yellow";
     context.ellipse(500, 500, 20, 10, 0, 0, 2 * Math.PI);
     context.stroke();
-
   }
 }
 ///
-class Player {
-  constructor(game) {
-    this.x = Math.round(Math.random() * window.innerWidth);
-    this.y = Math.round(Math.random() * window.innerHeight);
-    this.width = 100;
-    this.height = 200;
-    this.speed = 0;
-    this.maxSpeed = 300;
-    this.alpha = 0;
-    this.angularSpeed = 1;
-    this.acceleration = 500;
-    this.alphaTower = 0;
-    this.velocity = { x: 0, y: 0 };
-    this.reloadTime = 3000;
-    this.isReloaded = false;
-    //
-    setInterval(() => {
-      this.isReloaded = true;
-    }, this.reloadTime);
-  }
-
-  update(input) {
-    // var dy = input.mouse.y - this.y;
-    // var dx = input.mouse.x - this.x;
-
-    // if (input.mouse.x < this.x) {
-    //   this.alpha = Math.atan(dy / dx) + Math.PI;
-    // } else {
-    //   this.alpha = Math.atan(dy / dx);
-    // }
-    if (input.direction.y == -1) {
-      this.speed += this.acceleration * (1 / FPS);
-    } else {
-      this.speed -= this.acceleration * (1 / FPS);
-    }
-    if (this.speed < 0) this.speed = 0;
-    if (this.speed > this.maxSpeed) this.speed = this.maxSpeed;
-
-    this.velocity.x = this.speed * Math.cos(this.alpha);
-    this.velocity.y = this.speed * Math.sin(this.alpha);
-    // this.velocity.y = this.speed * input.direction.normalized.y;
-
-    this.x += Math.round(this.velocity.x * (1 / FPS));
-    this.y += Math.round(this.velocity.y * (1 / FPS));
-
-    this.alpha += this.angularSpeed * input.direction.x * (1 / FPS);
-    //
-    //
-  }
-  draw(context) {
-    context.strokeStyle = "#0362fc";
-    context.lineWidth = 5;
-
-    var a = Math.sqrt(Math.pow(this.width / 2, 2) + Math.pow(this.height / 2, 2));
-    var alp = Math.asin(this.width / 2 / a);
-    context.beginPath();
-    // drawing body of the tank
-    context.moveTo(Math.cos(this.alpha + alp) * a + this.x, Math.sin(this.alpha + alp) * a + this.y); // front right point
-    context.lineTo(Math.cos(this.alpha + Math.PI - alp) * a + this.x, Math.sin(this.alpha + Math.PI - alp) * a + this.y); // back  right point
-    context.lineTo(Math.cos(this.alpha + Math.PI + alp) * a + this.x, Math.sin(this.alpha + Math.PI + alp) * a + this.y); // back  left point
-    context.lineTo(Math.cos(this.alpha - alp) * a + this.x, Math.sin(this.alpha - alp) * a + this.y); // front left point
-    context.lineTo(Math.cos(this.alpha + alp) * a + this.x, Math.sin(this.alpha + alp) * a + this.y); // back to front right point
-    context.stroke();
-
-    // drawing tower of the tank
-    context.beginPath();
-    context.arc(this.x, this.y, 40, 0, 2 * Math.PI);
-
-    context.stroke();
-  }
-}
-///
-class Bullet {
-  constructor(x, y, mx, my) {
-    // this.target = { x: input.mouse.x, y: input.mouse.y };
-    this.is_active = true;
-    this.x = x;
-    this.y = y;
-    this.speed = 1500;
-    let dx = mx - x,
-      dy = my - y;
-    let distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-    this.velocity = {
-      x: this.speed * (dx / distance),
-      y: this.speed * (dy / distance),
-    };
-  }
-  update() {
-    this.x += this.velocity.x * (1 / FPS);
-    this.y += this.velocity.y * (1 / FPS);
-  }
-  draw(context) {
-    ctx.strokeStyle = "yellow";
-    ctx.lineWidth = 3;
-
-    context.beginPath();
-    context.arc(this.x, this.y, 5, 0, 2 * Math.PI);
-    context.stroke();
-  }
-}
 ///.
 class Game {
   constructor(width, height) {
     this.width = width;
     this.height = height;
     this.tileMap = new TileMap(50);
-    this.tank = new Tank(1,1);
+    this.tank = new Tank(1, 1);
     // this.player = new Player(this);
     this.input = new InputHandler();
     // this.bullets = [];
   }
   update() {
-    if(this.input.wheel != 0) {
-      this.tileMap.zoomChange(this.input.wheel/100);
+    if (this.input.wheel != 0) {
+      this.tileMap.zoomChange(this.input.wheel / 100);
       this.input.wheel = 0;
     }
   }
   draw(context) {
     this.tileMap.draw(context, 5, 5);
-    
-    this.tank.draw(context,1,1);
+
+    this.tank.draw(context, 1, 1);
   }
 }
 
@@ -267,6 +180,106 @@ function animate() {
 setInterval(animate, Math.round(1000 / FPS));
 // animate();
 
+// class Player {
+//   constructor(game) {
+//     this.x = Math.round(Math.random() * window.innerWidth);
+//     this.y = Math.round(Math.random() * window.innerHeight);
+//     this.width = 100;
+//     this.height = 200;
+//     this.speed = 0;
+//     this.maxSpeed = 300;
+//     this.alpha = 0;
+//     this.angularSpeed = 1;
+//     this.acceleration = 500;
+//     this.alphaTower = 0;
+//     this.velocity = { x: 0, y: 0 };
+//     this.reloadTime = 3000;
+//     this.isReloaded = false;
+//     //
+//     setInterval(() => {
+//       this.isReloaded = true;
+//     }, this.reloadTime);
+//   }
+
+//   update(input) {
+//     // var dy = input.mouse.y - this.y;
+//     // var dx = input.mouse.x - this.x;
+
+//     // if (input.mouse.x < this.x) {
+//     //   this.alpha = Math.atan(dy / dx) + Math.PI;
+//     // } else {
+//     //   this.alpha = Math.atan(dy / dx);
+//     // }
+//     if (input.direction.y == -1) {
+//       this.speed += this.acceleration * (1 / FPS);
+//     } else {
+//       this.speed -= this.acceleration * (1 / FPS);
+//     }
+//     if (this.speed < 0) this.speed = 0;
+//     if (this.speed > this.maxSpeed) this.speed = this.maxSpeed;
+
+//     this.velocity.x = this.speed * Math.cos(this.alpha);
+//     this.velocity.y = this.speed * Math.sin(this.alpha);
+//     // this.velocity.y = this.speed * input.direction.normalized.y;
+
+//     this.x += Math.round(this.velocity.x * (1 / FPS));
+//     this.y += Math.round(this.velocity.y * (1 / FPS));
+
+//     this.alpha += this.angularSpeed * input.direction.x * (1 / FPS);
+//     //
+//     //
+//   }
+//   draw(context) {
+//     context.strokeStyle = "#0362fc";
+//     context.lineWidth = 5;
+
+//     var a = Math.sqrt(Math.pow(this.width / 2, 2) + Math.pow(this.height / 2, 2));
+//     var alp = Math.asin(this.width / 2 / a);
+//     context.beginPath();
+//     // drawing body of the tank
+//     context.moveTo(Math.cos(this.alpha + alp) * a + this.x, Math.sin(this.alpha + alp) * a + this.y); // front right point
+//     context.lineTo(Math.cos(this.alpha + Math.PI - alp) * a + this.x, Math.sin(this.alpha + Math.PI - alp) * a + this.y); // back  right point
+//     context.lineTo(Math.cos(this.alpha + Math.PI + alp) * a + this.x, Math.sin(this.alpha + Math.PI + alp) * a + this.y); // back  left point
+//     context.lineTo(Math.cos(this.alpha - alp) * a + this.x, Math.sin(this.alpha - alp) * a + this.y); // front left point
+//     context.lineTo(Math.cos(this.alpha + alp) * a + this.x, Math.sin(this.alpha + alp) * a + this.y); // back to front right point
+//     context.stroke();
+
+//     // drawing tower of the tank
+//     context.beginPath();
+//     context.arc(this.x, this.y, 40, 0, 2 * Math.PI);
+
+//     context.stroke();
+//   }
+// }
+// ///
+// class Bullet {
+//   constructor(x, y, mx, my) {
+//     // this.target = { x: input.mouse.x, y: input.mouse.y };
+//     this.is_active = true;
+//     this.x = x;
+//     this.y = y;
+//     this.speed = 1500;
+//     let dx = mx - x,
+//       dy = my - y;
+//     let distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+//     this.velocity = {
+//       x: this.speed * (dx / distance),
+//       y: this.speed * (dy / distance),
+//     };
+//   }
+//   update() {
+//     this.x += this.velocity.x * (1 / FPS);
+//     this.y += this.velocity.y * (1 / FPS);
+//   }
+//   draw(context) {
+//     ctx.strokeStyle = "yellow";
+//     ctx.lineWidth = 3;
+
+//     context.beginPath();
+//     context.arc(this.x, this.y, 5, 0, 2 * Math.PI);
+//     context.stroke();
+//   }
+// }
 
 //
 // serverInterval = setInterval(server, Math.round(1000 / RPS));
