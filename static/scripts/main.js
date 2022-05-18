@@ -68,7 +68,7 @@ class Player {
     }, this.reloadTime);
   }
 
-  update(input) {
+  update(input, focus) {
     var dy = input.mouse.y - this.y;
     var dx = input.mouse.x - this.x;
 
@@ -92,14 +92,14 @@ class Player {
     // if (input.keys.includes("w")) this.y--;
     // else if (input.keys.includes("s")) this.y++;
   }
-  draw(context) {
+  draw(context, focus) {
     ctx.strokeStyle = "#0362fc";
     ctx.lineWidth = 5;
 
     context.beginPath();
-    context.arc(this.x, this.y, 50, 0, 2 * Math.PI);
-    context.moveTo(this.x, this.y);
-    context.lineTo(Math.cos(this.alpha) * 50 + this.x, Math.sin(this.alpha) * 50 + this.y);
+    context.arc(this.x + focus.x, this.y + focus.y, 50, 0, 2 * Math.PI);
+    context.moveTo(this.x + focus.x, this.y + focus.y);
+    context.lineTo(Math.cos(this.alpha) * 50 + this.x + focus.x, Math.sin(this.alpha) * 50 + this.y + focus.y);
     context.stroke();
   }
 }
@@ -129,6 +129,22 @@ class Bullet {
     context.stroke();
   }
 }
+////
+class TileMap {
+  constructor() {
+    this.w = 500;
+    this.h = 500;
+    //
+  }
+  draw(ctx, focus) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.rect(focus.x, focus.y, this.w, this.h);
+    ctx.stroke();
+  }
+}
 ///
 class Game {
   constructor(width, height) {
@@ -137,10 +153,11 @@ class Game {
     this.player = new Player(this);
     this.input = new InputHandler();
     this.bullets = [];
+    this.tileMap = new TileMap();
   }
   update() {
     this.input.update();
-    this.player.update(this.input);
+    this.player.update(this.input, { x: 100, y: 100 });
 
     if (this.input.shoot && this.player.isReloaded) {
       this.player.isReloaded = false;
@@ -159,7 +176,8 @@ class Game {
     this.input.direction.y = data.v;
   }
   draw(context) {
-    this.player.draw(context);
+    this.tileMap.draw(context, { x: 100, y: 100 });
+    this.player.draw(context, { x: 100, y: 100 });
     for (let i = 0; i < this.bullets.length; i++) {
       this.bullets[i].draw(context);
     }
@@ -178,7 +196,6 @@ const game = new Game(canvas.width, canvas.height);
 
 function animate() {
   game.update();
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   game.draw(ctx);
 }
 setInterval(animate, Math.round(1000 / FPS));
@@ -211,7 +228,7 @@ function server() {
     })
     .then((res) => res.json())
     .then((data) => {
-      console.log("json data: ", data);
+      // console.log("json data: ", data);
       game.updateData(data);
     });
 }
@@ -219,6 +236,16 @@ function stopServerInterval() {
   clearInterval(serverInterval);
 }
 
+function get() {
+  fetch("/gameAPI/")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("json data: ", data.status);
+      game.tileMap.w = data.map.w;
+      game.tileMap.h = data.map.h;
+    });
+}
+get();
 //
 //
 //
