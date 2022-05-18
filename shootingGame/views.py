@@ -1,3 +1,4 @@
+from math import gamma
 from multiprocessing import context
 from django.shortcuts import redirect, render
 from rest_framework.decorators import api_view
@@ -6,7 +7,7 @@ from rest_framework.response import Response
 from requests import request
 
 #####
-from .game import get_player_details, update_player, gameControl
+from .game import get_player_details, update_player, gameControl, game1
 # start_looping, stop_looping, , get_game_status,
 
 
@@ -42,7 +43,7 @@ def gameSettings(request):
 def game(request):
     if request.method == 'GET':
         # print(get_num())
-        return Response({"status": gameControl.get_game_status()})
+        return Response({"status": gameControl.get_game_status(), "map": game1.get_map_info()})
     elif request.method == 'POST':
         print(request.data)
         if request.data['game'] == 'start':

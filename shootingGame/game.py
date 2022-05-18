@@ -78,6 +78,9 @@ class Game:
     mapHeight = 1000
     player = Player()
 
+    def get_map_info(self):
+        return {"w": self.mapWidth, "h": self.mapHeight}
+
     def update(self):
         self.player.update()
         if self.player.x < 0:
@@ -105,20 +108,20 @@ def set_interval(func, sec):
 
 
 def get_player_details():
-    return game.player.get_details()
+    return game1.player.get_details()
 
 
 def update_player(data):
-    game.player.remote_update(data)
-    return game.player.get_details()
+    game1.player.remote_update(data)
+    return game1.player.get_details()
 
 
-game = Game()
+game1 = Game()
 gameControl = Control()
 
 
 def loop():
-    game.update()
+    game1.update()
 #
 #
 #
