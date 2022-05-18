@@ -6,6 +6,7 @@ class InputHandler {
     this.tempDirection = { x: 0, y: 0 };
     this.direction = { x: 0, y: 0, normalized: { x: 0, y: 0 } };
     this.mouse = { x: 0, y: 0 };
+    this.tempMouse = { x: 0, y: 0 };
     window.addEventListener("keydown", (e) => {
       if ((e.key == "a" || e.key == "d" || e.key == "w" || e.key == "s") && this.keys.indexOf(e.key) == -1) {
         this.keys.push(e.key);
@@ -19,8 +20,8 @@ class InputHandler {
       //   console.log(e.key, this.keys);
     });
     window.onmousemove = (e) => {
-      this.mouse.x = e.clientX;
-      this.mouse.y = e.clientY;
+      this.tempMouse.x = e.clientX;
+      this.tempMouse.y = e.clientY;
     };
     window.onmousedown = (e) => {
       this.shoot = true;
@@ -29,7 +30,10 @@ class InputHandler {
       this.shoot = false;
     };
   }
-  update() {
+  update(focus) {
+    this.mouse.x = this.tempMouse.x - focus.x;
+    this.mouse.y = this.tempMouse.y - focus.y;
+
     var left = this.keys.includes("a");
     var right = this.keys.includes("d");
     var up = this.keys.includes("w");
@@ -120,12 +124,12 @@ class Bullet {
     this.x += this.velocity.x * (1 / FPS);
     this.y += this.velocity.y * (1 / FPS);
   }
-  draw(context) {
+  draw(context, focus) {
     ctx.strokeStyle = "yellow";
     ctx.lineWidth = 3;
 
     context.beginPath();
-    context.arc(this.x, this.y, 5, 0, 2 * Math.PI);
+    context.arc(this.x + focus.x, this.y + focus.y, 5, 0, 2 * Math.PI);
     context.stroke();
   }
 }
@@ -154,10 +158,16 @@ class Game {
     this.input = new InputHandler();
     this.bullets = [];
     this.tileMap = new TileMap();
+    this.focus = { x: 500, y: 0 };
   }
   update() {
-    this.input.update();
-    this.player.update(this.input, { x: 100, y: 100 });
+    //focusing center of window (focusing players coordinates)
+    this.focus.x = this.width / 2 - this.player.x;
+    this.focus.y = this.height / 2 - this.player.y;
+    //<<
+
+    this.input.update(this.focus);
+    this.player.update(this.input, this.focus);
 
     if (this.input.shoot && this.player.isReloaded) {
       this.player.isReloaded = false;
@@ -176,10 +186,10 @@ class Game {
     this.input.direction.y = data.v;
   }
   draw(context) {
-    this.tileMap.draw(context, { x: 100, y: 100 });
-    this.player.draw(context, { x: 100, y: 100 });
+    this.tileMap.draw(context, this.focus);
+    this.player.draw(context, this.focus);
     for (let i = 0; i < this.bullets.length; i++) {
-      this.bullets[i].draw(context);
+      this.bullets[i].draw(context, this.focus);
     }
   }
 }
