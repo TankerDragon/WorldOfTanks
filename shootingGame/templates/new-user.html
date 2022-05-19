@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h3>Registration</h3>
+    <form action="" method="POST">
+      {% csrf_token %}
+      <div>
+        <label>{{form.username.label}}</label>
+        {{form.username}}
+      </div>
+      <div>
+        <label>{{form.first_name.label}}</label>
+        {{form.first_name}}
+      </div>
+
+      <div>
+        <label>{{form.last_name.label}}</label>
+        {{form.last_name}}
+      </div>
+      <div>
+        <label>{{form.email.label}}</label>
+        {{form.email}}
+      </div>
+      <div>
+        <label>{{form.password1.label}}</label>
+        {{form.password1}}
+      </div>
+      <div>
+        <label>{{form.password2.label}}</label>
+        {{form.password2}}
+      </div>
+      <input class="button" type="submit" value="Register" />
+      {{form.errors}}
+    </form>
+  </body>
+</html>

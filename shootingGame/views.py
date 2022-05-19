@@ -8,18 +8,53 @@ from requests import request
 
 #####
 from .game import get_player_details, update_player, gameControl, game1
+from .forms import CreateUserForm
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 # start_looping, stop_looping, , get_game_status,
 
 
 def main(request):
     return render(request, 'index.html')
 
+def loginPage(request):
+    if request.user.is_authenticated:
+        return redirect('game')
+    else:
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
 
-def username(request):
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+                return redirect('game')
+            else:
+                messages.info(request, 'Username OR password is incorrect')
+
+        context = {}
+        return render(request, 'login.html', context)
+
+@login_required(login_url='login')
+def logoutUser(request):
+    logout(request)
+    return redirect('login')
+
+
+def new_user(request):
+    user_form = CreateUserForm()
     if request.method == 'POST':
-        print(request.POST['username'])
-        return redirect('username')
-    return render(request, 'username.html')
+        user_form = CreateUserForm(request.POST)
+        if user_form.is_valid():
+            user_form.save()
+            return redirect('login')
+
+    context = {'form': user_form}
+    return render(request, 'new-user.html', context)
+   
 
 
 @api_view(['GET', 'POST'])
@@ -27,7 +62,7 @@ def update(request):
     if request.method == "GET":
         return Response(get_player_details())
     elif request.method == "POST":
-        # print(request.data)
+        # print(request.user)
         return Response(update_player(request.data))
     return Response(status=status.HTTP_200_OK)
 

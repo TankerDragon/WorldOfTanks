@@ -32,6 +32,7 @@ class Control:
 
 
 class Player:
+    username = ""
     x = 500
     y = 500
     speed = 500
