@@ -76,6 +76,7 @@ class Bullet:
 class Game:
     mapWidth = 1000
     mapHeight = 1000
+    players = []
     player = Player()
 
     def get_map_info(self):
@@ -83,6 +84,7 @@ class Game:
 
     def update(self):
         self.player.update()
+
         if self.player.x < 0:
             self.player.x = 0
         elif self.player.x > self.mapWidth:

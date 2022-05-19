@@ -58,8 +58,8 @@ class InputHandler {
 ///
 class Player {
   constructor(game) {
-    this.x = Math.round(Math.random() * window.innerWidth);
-    this.y = Math.round(Math.random() * window.innerHeight);
+    this.x = 0;
+    this.y = 0;
     this.speed = 500;
     this.alpha = 0;
     this.velocity = { x: 0, y: 0 };
@@ -72,7 +72,7 @@ class Player {
     }, this.reloadTime);
   }
 
-  update(input, focus) {
+  update(input) {
     var dy = input.mouse.y - this.y;
     var dx = input.mouse.x - this.x;
 
@@ -161,13 +161,21 @@ class Game {
     this.focus = { x: 500, y: 0 };
   }
   update() {
-    //focusing center of window (focusing players coordinates)
-    this.focus.x = this.width / 2 - this.player.x;
-    this.focus.y = this.height / 2 - this.player.y;
-    //<<
+    
 
     this.input.update(this.focus);
     this.player.update(this.input, this.focus);
+
+    if (this.player.x < 0) {
+      this.player.x = 0;
+    } else if (this.player.x > this.tileMap.w) {
+      this.player.x = this.tileMap.w;
+    }
+    if (this.player.y < 0) {
+      this.player.y = 0;
+    } else if (this.player.y > this.tileMap.h) {
+      this.player.y = this.tileMap.h;
+    }
 
     if (this.input.shoot && this.player.isReloaded) {
       this.player.isReloaded = false;
@@ -177,6 +185,10 @@ class Game {
       this.bullets[i].update();
     }
     //console.log(this.bullets);
+    //focusing center of window (focusing players coordinates)
+    this.focus.x = this.width / 2 - this.player.x;
+    this.focus.y = this.height / 2 - this.player.y;
+    //<<
   }
   updateData(data) {
     this.player.x = data.coodX;

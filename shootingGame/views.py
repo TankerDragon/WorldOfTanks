@@ -27,7 +27,7 @@ def update(request):
     if request.method == "GET":
         return Response(get_player_details())
     elif request.method == "POST":
-        print(request.data)
+        # print(request.data)
         return Response(update_player(request.data))
     return Response(status=status.HTTP_200_OK)
 
