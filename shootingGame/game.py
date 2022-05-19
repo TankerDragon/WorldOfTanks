@@ -6,6 +6,7 @@
 # import multiprocessing
 # from multiprocessing import freeze_support
 # import concurrent.futures
+from operator import index
 import threading
 
 
@@ -80,26 +81,28 @@ class Game:
     mapWidth = 1000
     mapHeight = 1000
     players = []
-    player = Player("")
 
     def add_new_player(self, username):
         self.players.append(Player(username))
         print(self.players)
+        for i in range(len(self.players)):
+            print("*** ", self.players[i].username)
 
     def get_map_info(self):
         return {"w": self.mapWidth, "h": self.mapHeight}
 
     def update(self):
-        self.player.update()
+        for i in range(len(self.players)):
+            self.players[i].update()
 
-        if self.player.x < 0:
-            self.player.x = 0
-        elif self.player.x > self.mapWidth:
-            self.player.x = self.mapWidth
-        if self.player.y < 0:
-            self.player.y = 0
-        elif self.player.y > self.mapHeight:
-            self.player.y = self.mapHeight
+            if self.players[i].x < 0:
+                self.players[i].x = 0
+            elif self.players[i].x > self.mapWidth:
+                self.players[i].x = self.mapWidth
+            if self.players[i].y < 0:
+                self.players[i].y = 0
+            elif self.players[i].y > self.mapHeight:
+                self.players[i].y = self.mapHeight
 ################################
 # interval function
 
@@ -117,18 +120,21 @@ def set_interval(func, sec):
 
 
 def get_player_details(username):
+    index = -1
     for i in range(len(game1.players)):
         if game1.players[i].username == username:
-            print("******")
-    return game1.player.get_details()
+            index = i
+    return game1.players[index].get_details()
 
 
 def update_player(data, username):
+    index = -1
+
     for i in range(len(game1.players)):
+        index = i
         if game1.players[i].username == username:
-            print("*****")
             game1.players[i].remote_update(data)
-    return game1.player.get_details()
+    return game1.players[index].get_details()
 
 
 game1 = Game()
