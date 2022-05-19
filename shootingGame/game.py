@@ -45,6 +45,8 @@ class Player:
 
     reloadTime = 400
     isReloaded = False
+    def __init__(self, username):
+        self.username = username
 
     def update(self):
         self.vX = self.speed * self.horizontal
@@ -78,7 +80,11 @@ class Game:
     mapWidth = 1000
     mapHeight = 1000
     players = []
-    player = Player()
+    player = Player("")
+
+    def add_new_player(self, username):
+        self.players.append(Player(username))
+        print(self.players)
 
     def get_map_info(self):
         return {"w": self.mapWidth, "h": self.mapHeight}
@@ -110,12 +116,18 @@ def set_interval(func, sec):
         return t
 
 
-def get_player_details():
+def get_player_details(username):
+    for i in range(len(game1.players)):
+        if game1.players[i].username == username:
+            print("******")
     return game1.player.get_details()
 
 
-def update_player(data):
-    game1.player.remote_update(data)
+def update_player(data, username):
+    for i in range(len(game1.players)):
+        if game1.players[i].username == username:
+            print("*****")
+            game1.players[i].remote_update(data)
     return game1.player.get_details()
 
 

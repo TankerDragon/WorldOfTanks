@@ -15,8 +15,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 # start_looping, stop_looping, , get_game_status,
 
-
+@login_required(login_url='login')
 def main(request):
+    game1.add_new_player(request.user)
     return render(request, 'index.html')
 
 def loginPage(request):
@@ -56,24 +57,24 @@ def new_user(request):
     return render(request, 'new-user.html', context)
    
 
-
+@login_required(login_url='login')
 @api_view(['GET', 'POST'])
 def update(request):
     if request.method == "GET":
-        return Response(get_player_details())
+        return Response(get_player_details(request.user))
     elif request.method == "POST":
         # print(request.user)
-        return Response(update_player(request.data))
+        return Response(update_player(request.data, request.user))
     return Response(status=status.HTTP_200_OK)
 
-
+@login_required(login_url='login')
 def gameSettings(request):
     context = {
         "status": gameControl.get_game_status()
     }
     return render(request, 'game-settings.html', context)
 
-
+@login_required(login_url='login')
 @api_view(['GET', 'POST'])
 def game(request):
     if request.method == 'GET':
