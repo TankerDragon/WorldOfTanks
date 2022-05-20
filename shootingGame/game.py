@@ -62,7 +62,7 @@ class Player:
             "coodX": self.x,
             "coodY": self.y,
             "h": self.horizontal,
-            "v": self.vertical
+            "v": self.vertical,
         }
         return detail
 
@@ -129,15 +129,23 @@ def get_player_details(username):
     return game1.players[index].get_details()
 
 
-def update_player(data, username):
+def update_player(request):  # .data, .user
     index = -1
 
     for i in range(len(game1.players)):
-        if game1.players[i].username == username:
+        if game1.players[i].username == request.user:
             index = i
-            game1.players[i].remote_update(data)
+            game1.players[i].remote_update(request.data)
             break
-    return game1.players[index].get_details()
+
+    response = game1.players[index].get_details()
+    response["enemies"] = []
+
+    for i in range(len(game1.players)):
+        if i != index:
+            response["enemies"].append(game1.players[i].get_details())
+
+    return response
 
 
 game1 = Game()

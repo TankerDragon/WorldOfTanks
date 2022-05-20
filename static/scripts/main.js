@@ -250,7 +250,7 @@ function server() {
     })
     .then((res) => res.json())
     .then((data) => {
-      // console.log("json data: ", data);
+      console.log("json data: ", data);
       game.updateData(data);
     });
 }
