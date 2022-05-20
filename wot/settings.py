@@ -84,8 +84,8 @@ DATABASES = {
         'NAME': 'game',
         'USER': 'root',
         'HOST': 'localhost',
-        'PASSWORD': '@akb21s4m$'
-        # 'PASSWORD': 'akbarjonaA8090'
+        # 'PASSWORD': '@akb21s4m$'
+        'PASSWORD': 'akbarjonaA8090'
     }
 }
 

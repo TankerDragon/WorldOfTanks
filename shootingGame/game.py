@@ -46,6 +46,7 @@ class Player:
 
     reloadTime = 400
     isReloaded = False
+
     def __init__(self, username):
         self.username = username
 
@@ -124,6 +125,7 @@ def get_player_details(username):
     for i in range(len(game1.players)):
         if game1.players[i].username == username:
             index = i
+            break
     return game1.players[index].get_details()
 
 
@@ -131,9 +133,10 @@ def update_player(data, username):
     index = -1
 
     for i in range(len(game1.players)):
-        index = i
         if game1.players[i].username == username:
+            index = i
             game1.players[i].remote_update(data)
+            break
     return game1.players[index].get_details()
 
 
