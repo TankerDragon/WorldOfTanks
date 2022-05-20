@@ -55,15 +55,15 @@ class InputHandler {
     // console.log(this.direction.normalized);
   }
 }
+
 ///
 class Player {
-  constructor(game) {
+  constructor() {
     this.x = 0;
     this.y = 0;
     this.speed = 500;
     this.alpha = 0;
     this.velocity = { x: 0, y: 0 };
-    this.game = game;
     this.reloadTime = 400;
     this.isReloaded = false;
     //
@@ -86,18 +86,39 @@ class Player {
 
     this.x += Math.round(this.velocity.x * (1 / FPS));
     this.y += Math.round(this.velocity.y * (1 / FPS));
-    //
-    //
-    // console.log(this.x, this.y);
-
-    //console.log(this.x, this.y);
-    // if (input.keys.includes("a")) this.x--;
-    // else if (input.keys.includes("d")) this.x++;
-    // if (input.keys.includes("w")) this.y--;
-    // else if (input.keys.includes("s")) this.y++;
   }
   draw(context, focus) {
     ctx.strokeStyle = "#0362fc";
+    ctx.lineWidth = 5;
+
+    context.beginPath();
+    context.arc(this.x + focus.x, this.y + focus.y, 50, 0, 2 * Math.PI);
+    context.moveTo(this.x + focus.x, this.y + focus.y);
+    context.lineTo(Math.cos(this.alpha) * 50 + this.x + focus.x, Math.sin(this.alpha) * 50 + this.y + focus.y);
+    context.stroke();
+  }
+}
+///
+class Enemy {
+  constructor() {
+    this.x = 0;
+    this.y = 0;
+    this.speed = 500;
+    this.alpha = 0;
+    this.velocity = { x: 0, y: 0 };
+    this.username = "";
+    this.direction = { x: 0, y: 0 };
+  }
+
+  update() {
+    this.velocity.x = this.speed * this.direction.x;
+    this.velocity.y = this.speed * this.direction.y;
+
+    this.x += Math.round(this.velocity.x * (1 / FPS));
+    this.y += Math.round(this.velocity.y * (1 / FPS));
+  }
+  draw(context, focus) {
+    ctx.strokeStyle = "red";
     ctx.lineWidth = 5;
 
     context.beginPath();
@@ -154,17 +175,17 @@ class Game {
   constructor(width, height) {
     this.width = width;
     this.height = height;
-    this.player = new Player(this);
+    this.player = new Player();
+    this.enemies = [new Enemy()];
     this.input = new InputHandler();
     this.bullets = [];
     this.tileMap = new TileMap();
     this.focus = { x: 500, y: 0 };
   }
   update() {
-    
-
     this.input.update(this.focus);
-    this.player.update(this.input, this.focus);
+    this.player.update(this.input);
+    this.enemies[0].update();
 
     if (this.player.x < 0) {
       this.player.x = 0;
@@ -193,13 +214,18 @@ class Game {
   updateData(data) {
     this.player.x = data.coodX;
     this.player.y = data.coodY;
-
     this.input.direction.x = data.h;
     this.input.direction.y = data.v;
+
+    this.enemies[0].x = data.enemies[0].coodX;
+    this.enemies[0].y = data.enemies[0].coodY;
+    this.enemies[0].direction.x = data.enemies[0].h;
+    this.enemies[0].direction.y = data.enemies[0].v;
   }
   draw(context) {
     this.tileMap.draw(context, this.focus);
     this.player.draw(context, this.focus);
+    this.enemies[0].draw(context, this.focus);
     for (let i = 0; i < this.bullets.length; i++) {
       this.bullets[i].draw(context, this.focus);
     }
